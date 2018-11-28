@@ -1,5 +1,7 @@
 <html>
     <head>
+        <meta charset="UTF-8">
+
         <!-- Math.js cdn -->
         <script src="https://unpkg.com/mathjs@5.2.3/dist/math.min.js"></script>
 
@@ -11,8 +13,15 @@
     </head>
     <body>
         <input type="text" id="transfer-function">
-        <input type="button" value="Compute" id="button-compute">
         <p id="output"></p>
-        <canvas id="plot"></canvas>
+        <div class="plot-container">
+            <div class="plot-0">
+                <canvas id="module-plot"></canvas>
+            </div>
+            <div class="plot-1">
+                <canvas id="phase-plot"></canvas>
+            </div>
+        </div>
+        
     </body>
 </html>
