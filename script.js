@@ -44,13 +44,8 @@ let modulePlot
 let phasePlot
 
 function bode_plot(){
-    ys = xs.map((w) => {
-        return compiled.eval({s: math.complex(0, w)}).toPolar()
-    })
 
-    var y_module = ys.map(c => c.r)
-    var y_phase = ys.map(c => c.phi / math.pi * 180)
-
+    // --- UTILITY FUNCTIONS --- begin
     function create_data(y, label){
         return {
             labels: xs,
@@ -64,46 +59,52 @@ function bode_plot(){
         }
     }
 
-    if(modulePlot == undefined){
-        var modulePlotContext = document.getElementById("module-plot").getContext('2d')
-        modulePlot = new Chart(modulePlotContext, {
-            type: 'line',
-            data: create_data(y_module, "|T(ωj)|"),
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,        
-                scales: {
-                    yAxes: [{
-                        type: 'logarithmic'
-                    }]
+    function update_chart(chart, chart_context, y, label, scales){
+        var data = create_data(y, label)
+        if(chart == undefined){
+            chart = new Chart(chart_context, {
+                type: 'line',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,        
+                    scales: scales
                 }
-            }
-        })
-    } else {
-        modulePlot.config.data = create_data(y_module, "|T(ωj)|")
-        modulePlot.update();
+            })
+        } else {
+            chart.config.data = data
+            chart.update();
+        }
     }
-    
-    if(phasePlot == undefined){
-        var phasePlotContext = document.getElementById("phase-plot").getContext('2d')
-        phasePlot = new Chart(phasePlotContext, {
-            type: 'line',
-            data: create_data(y_phase, "∠T(ωj)"),
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,        
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            suggestedMin: -90,
-                            suggestedMax: 90
-                        }
-                    }]
+    // --- UTILITY FUNCTIONS --- end
+
+    ys = xs.map((w) => {
+        return compiled.eval({s: math.complex(0, w)}).toPolar()
+    })
+
+    var y_module = ys.map(c => c.r)
+    var y_phase = ys.map(c => c.phi / math.pi * 180)
+
+    var modulePlotContext = document.getElementById("module-plot").getContext('2d')
+    update_chart(modulePlot, modulePlotContext, y_module,
+        label = "|T(ωj)|",
+        scales = {
+            yAxes: [{
+                type: 'logarithmic'
+            }]
+        }
+    )
+
+    var phasePlotContext = document.getElementById("phase-plot").getContext('2d')
+    update_chart(phasePlot, phasePlotContext, y_phase,
+        label = "∠T(ωj)",
+        scales = {
+            yAxes: [{
+                ticks: {
+                    suggestedMin: -90,
+                    suggestedMax: 90
                 }
-            }
-        })
-    } else {
-        phasePlot.config.data = create_data(y_phase, "∠T(ωj)")
-        phasePlot.update();
-    }
+            }]
+        }
+    )
 }
